@@ -73,6 +73,6 @@ mcpcheck PATH [--format text|json|sarif] [--min-severity CRITICAL|HIGH|MEDIUM|LO
 - 90%+ coverage target
 
 ## Git
-- Repo: https://github.com/onicarps/MCPSafe
+- Repo: https://github.com/onicarps/mcpcheck
 - Branch naming: mcpsafe/ONI-XX-description
 - Linear project: MCPSafe (ONI), issues ONI-84 to ONI-109

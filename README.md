@@ -82,7 +82,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run MCPCheck
-        uses: onicarps/MCPSafe@main
+        uses: onicarps/mcpcheck@main
         with:
           path: "."
           severity: "LOW"
