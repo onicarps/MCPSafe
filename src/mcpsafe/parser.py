@@ -1,4 +1,4 @@
-"""MCP tool definition parser — AST + regex strategies.
+"""MCP tool definition parser for MCPCheck — AST + regex strategies.
 
 Two parsing strategies:
 1. Decorator-based: @mcp.tool() / @app.tool() decorated functions

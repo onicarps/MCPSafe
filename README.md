@@ -95,7 +95,7 @@ jobs:
 You can also invoke MCPCheck directly in any CI pipeline:
 
 ```bash
-pip install mcpcheck
+pip install mcp-scan-safe
 mcpcheck ./my-mcp-server --format sarif > results.sarif
 ```
 

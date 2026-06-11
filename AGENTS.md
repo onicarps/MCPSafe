@@ -1,4 +1,4 @@
-# MCPSafe — Project Spec
+# MCPCheck — Project Spec
 
 ## Goal
 MCP supply chain security scanner. CLI tool that scans MCP server Python source files
@@ -15,7 +15,7 @@ for security vulnerabilities: tool poisoning, prompt injection, data exfiltratio
 ```
 src/mcpsafe/
   __init__.py     # Version only
-  cli.py          # Click CLI entry point
+  cli.py          # Click CLI entry point (command: mcpcheck)
   parser.py       # MCP tool definition parser (AST + regex)
   rules.py        # Security rule engine
   formatters.py   # Output formatters (text, json, sarif)
@@ -30,6 +30,11 @@ pyproject.toml
 action.yml
 README.md
 ```
+
+## Package Info
+- PyPI: `mcp-scan-safe`
+- CLI command: `mcpcheck` (alias: `mcpsafe`)
+- Internal module: `mcpsafe`
 
 ## Conventions
 - TDD: write failing test → implement → verify pass → commit
@@ -57,8 +62,8 @@ README.md
 
 ## CLI Interface
 ```
-mcpsafe PATH [--format text|json|sarif] [--min-severity CRITICAL|HIGH|MEDIUM|LOW]
-            [--exclude GLOB...] [--version]
+mcpcheck PATH [--format text|json|sarif] [--min-severity CRITICAL|HIGH|MEDIUM|LOW]
+              [--exclude GLOB...] [--version]
 ```
 
 ## Testing

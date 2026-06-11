@@ -1,10 +1,11 @@
-# MCPSafe — Independent Code Quality Audit (AUDIT_DROID)
+# MCPCheck — Independent Code Quality Audit (AUDIT_DROID)
 
 **Date:** 2026-06-11
 **Auditor:** Independent code-quality reviewer (fresh audit, no prior context)
 **Scope:** All source files in `src/mcpsafe/` and all test files in `tests/`
 **Method:** Manual review of every file, plus inspection of CI / `action.yml` /
 `pyproject.toml` configuration.
+**Package:** `mcp-scan-safe` on PyPI, CLI command: `mcpcheck`
 
 This audit is intentionally independent of `AUDIT.md`. Where it overlaps, the
 findings here are stated in my own words and frequently disagree with or extend

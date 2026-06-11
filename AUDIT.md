@@ -1,9 +1,10 @@
-# MCPSafe Security Audit Report
+# MCPCheck Security Audit Report
 
 **Date:** 2026-06-11
 **Auditor:** Independent subagent review (fresh-eyes, no shared context with implementers)
 **Scope:** Full codebase review — all source files, test files, CI/CD configs, action.yml
 **Repo:** https://github.com/onicarps/MCPSafe (main branch, Tasks 1-8 complete)
+**Package:** `mcp-scan-safe` on PyPI, CLI command: `mcpcheck`
 
 ---
 

@@ -1,4 +1,4 @@
-"""Security rule engine - 6 categories of detection rules.
+"""Security rule engine for MCPCheck — 6 categories of detection rules.
 
 Uses regex-based pattern matching against tool name + description.
 """

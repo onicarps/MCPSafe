@@ -1,4 +1,4 @@
-name: "MCPSafe"
+name: "MCPCheck"
 description: "Scan MCP server for security vulnerabilities"
 branding:
   icon: "shield"
@@ -13,20 +13,20 @@ inputs:
     required: false
     default: "LOW"
   version:
-    description: "MCPSafe version to install"
+    description: "MCPCheck version to install"
     required: false
     default: "0.1.0"
 runs:
   using: "composite"
   steps:
-    - name: Install MCPSafe
+    - name: Install MCPCheck
       shell: bash
-      run: pip install mcpsafe==${{ inputs.version }}
-    - name: Run MCPSafe
+      run: pip install mcp-scan-safe==${{ inputs.version }}
+    - name: Run MCPCheck
       shell: bash
-      run: mcpsafe ${{ inputs.path }} --format sarif --min-severity ${{ inputs.severity }} > mcpsafe-results.sarif
+      run: mcpcheck ${{ inputs.path }} --format sarif --min-severity ${{ inputs.severity }} > mcpcheck-results.sarif
     - name: Upload SARIF
       uses: github/codeql-action/upload-sarif@v3
       if: always()
       with:
-        sarif_file: mcpsafe-results.sarif
+        sarif_file: mcpcheck-results.sarif

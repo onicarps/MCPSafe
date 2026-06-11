@@ -1,4 +1,4 @@
-"""Click CLI entry point for MCPSafe."""
+"""Click CLI entry point for MCPCheck."""
 
 from pathlib import Path
 

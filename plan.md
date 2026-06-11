@@ -1,10 +1,12 @@
-# MCPSafe Implementation Plan
+# MCPCheck Implementation Plan
 
-**Goal:** Build a CLI tool that scans MCP server source code for security vulnerabilities — tool poisoning, prompt injection via descriptions, data exfiltration patterns, and toxic tool call chains. Ships as a PyPI package with CI/CD integration.
+**Goal:** Build a CLI tool that scans MCP server source code for security vulnerabilities — tool poisoning, prompt injection via descriptions, data exfiltration patterns, and toxic tool call chains. Ships as PyPI package `mcp-scan-safe` with CI/CD integration.
 
 **Architecture:** Python CLI using AST parsing + regex pattern matching. Two parsing strategies: decorator-based (`@mcp.tool()`) and explicit (`types.Tool()`). Rule-based detection engine with severity ratings. Output in text, JSON, and SARIF formats.
 
 **Tech Stack:** Python 3.11+, Click, Rich, pytest, pyproject.toml, GitHub Actions
+
+**Package:** `mcp-scan-safe` on PyPI, CLI command: `mcpcheck`
 
 ## Input Schema
 
@@ -31,7 +33,7 @@ class ToolDefinition:
 
 ### Task 1: Project Scaffolding
 - Create pyproject.toml, CLI skeleton, test infrastructure
-- Verify: `pip install -e ".[dev]"` works, `mcpsafe --help` works, 2 tests pass
+- Verify: `pip install -e ".[dev]"` works, `mcpcheck --help` works, 2 tests pass
 
 ### Task 2: MCP Tool Parser
 - Decorator pattern: `@mcp.tool()` / @app.tool()`, sync + async, no nested functions

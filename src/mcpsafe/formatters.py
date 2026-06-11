@@ -1,4 +1,4 @@
-"""Output formatters — text, JSON, and SARIF output for scan findings."""
+"""Output formatters for MCPCheck — text, JSON, and SARIF output for scan findings."""
 
 import json
 from datetime import UTC, datetime

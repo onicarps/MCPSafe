@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mcp-scan-safe"
 version = "0.1.0"
-description = "MCP supply chain security scanner"
+description = "MCP supply chain security scanner — detect tool poisoning, prompt injection, data exfiltration"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.11"
