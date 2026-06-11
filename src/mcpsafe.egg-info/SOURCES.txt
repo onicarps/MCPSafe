@@ -2,6 +2,9 @@ LICENSE
 pyproject.toml
 src/mcpsafe/__init__.py
 src/mcpsafe/cli.py
+src/mcpsafe/formatters.py
+src/mcpsafe/parser.py
+src/mcpsafe/rules.py
 src/mcpsafe.egg-info/PKG-INFO
 src/mcpsafe.egg-info/SOURCES.txt
 src/mcpsafe.egg-info/dependency_links.txt
@@ -9,3 +12,6 @@ src/mcpsafe.egg-info/entry_points.txt
 src/mcpsafe.egg-info/requires.txt
 src/mcpsafe.egg-info/top_level.txt
 tests/test_cli.py
+tests/test_formatters.py
+tests/test_parser.py
+tests/test_rules.py

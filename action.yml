@@ -1,0 +1,32 @@
+name: "MCPSafe"
+description: "Scan MCP server for security vulnerabilities"
+branding:
+  icon: "shield"
+  color: "red"
+inputs:
+  path:
+    description: "Path to MCP server directory"
+    required: true
+    default: "."
+  severity:
+    description: "Minimum severity to report"
+    required: false
+    default: "LOW"
+  version:
+    description: "MCPSafe version to install"
+    required: false
+    default: "0.1.0"
+runs:
+  using: "composite"
+  steps:
+    - name: Install MCPSafe
+      shell: bash
+      run: pip install mcpsafe==${{ inputs.version }}
+    - name: Run MCPSafe
+      shell: bash
+      run: mcpsafe ${{ inputs.path }} --format sarif --min-severity ${{ inputs.severity }} > mcpsafe-results.sarif
+    - name: Upload SARIF
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: mcpsafe-results.sarif
