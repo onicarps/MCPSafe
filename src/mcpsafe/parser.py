@@ -72,7 +72,10 @@ def _extract_description(func_node: ast.FunctionDef | ast.AsyncFunctionDef) -> s
 
 def _parse_decorator_tools(source: str, source_file: str) -> list[ToolDefinition]:
     """Parse decorator-based tool definitions from source code."""
-    tree = ast.parse(source)
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return []
     tools: list[ToolDefinition] = []
 
     # Only iterate top-level statements
