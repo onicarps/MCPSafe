@@ -224,6 +224,13 @@ def _glob_matches(path: str, patterns: List[str]) -> bool:
     for pattern in patterns:
         if fnmatch.fnmatch(name, pattern) or fnmatch.fnmatch(path, pattern):
             return True
+        # Also match against path suffixes for patterns like "vendor/*"
+        # e.g., /tmp/xxx/vendor/bad.py should match vendor/*
+        parts = Path(path).parts
+        for i in range(len(parts)):
+            subpath = str(Path(*parts[i:]))
+            if fnmatch.fnmatch(subpath, pattern):
+                return True
     return False
 
 
