@@ -1,13 +1,11 @@
 """Tests for MCPSafe MCP tool definition parser."""
 
-import os
 import tempfile
 from pathlib import Path
 
 import pytest
 
-from mcpsafe.parser import ToolDefinition, parse_directory, parse_file, scan_directory
-
+from mcpsafe.parser import parse_directory, parse_file, scan_directory
 
 # ---------------------------------------------------------------------------
 # Helpers: write temp .py files

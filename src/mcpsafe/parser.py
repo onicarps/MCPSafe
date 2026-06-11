@@ -11,7 +11,6 @@ import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional
 
 
 @dataclass
@@ -20,7 +19,7 @@ class ToolDefinition:
 
     name: str
     description: str
-    parameters: List[str]
+    parameters: list[str]
     source_file: str
     source_type: str  # "decorator" | "explicit"
     line_number: int
@@ -57,7 +56,7 @@ def _has_tool_decorator(func_node: ast.FunctionDef | ast.AsyncFunctionDef) -> bo
     return False
 
 
-def _extract_parameters(func_node: ast.FunctionDef | ast.AsyncFunctionDef) -> List[str]:
+def _extract_parameters(func_node: ast.FunctionDef | ast.AsyncFunctionDef) -> list[str]:
     """Extract argument names from a function definition (skip 'self', 'cls')."""
     params = []
     for arg in func_node.args.args:
@@ -71,10 +70,10 @@ def _extract_description(func_node: ast.FunctionDef | ast.AsyncFunctionDef) -> s
     return ast.get_docstring(func_node) or ""
 
 
-def _parse_decorator_tools(source: str, source_file: str) -> List[ToolDefinition]:
+def _parse_decorator_tools(source: str, source_file: str) -> list[ToolDefinition]:
     """Parse decorator-based tool definitions from source code."""
     tree = ast.parse(source)
-    tools: List[ToolDefinition] = []
+    tools: list[ToolDefinition] = []
 
     # Only iterate top-level statements
     for node in tree.body:
@@ -105,7 +104,7 @@ _EXPLICIT_TOOL_RE = re.compile(
 )
 
 
-def _extract_balanced_parens(source: str, start: int) -> Optional[str]:
+def _extract_balanced_parens(source: str, start: int) -> str | None:
     """Extract content inside balanced parentheses starting at position `start`.
 
     `start` should point to the opening '(' character.
@@ -139,7 +138,7 @@ def _extract_balanced_parens(source: str, start: int) -> Optional[str]:
     return None
 
 
-def _extract_keyword_string(content: str, key: str) -> Optional[str]:
+def _extract_keyword_string(content: str, key: str) -> str | None:
     """Extract a string value for a keyword argument like name="foo"."""
     # Match key="value" or key='value'
     pattern = re.compile(rf'\b{key}\s*=\s*([\'"])(.*?)\1')
@@ -149,7 +148,7 @@ def _extract_keyword_string(content: str, key: str) -> Optional[str]:
     return None
 
 
-def _extract_keyword_list(content: str, key: str) -> Optional[List[str]]:
+def _extract_keyword_list(content: str, key: str) -> list[str] | None:
     """Extract a list value for a keyword argument like parameters=["a", "b"]."""
     pattern = re.compile(rf'\b{key}\s*=\s*\[(.*?)\]')
     m = pattern.search(content)
@@ -161,9 +160,9 @@ def _extract_keyword_list(content: str, key: str) -> Optional[List[str]]:
     return None
 
 
-def _parse_explicit_tools(source: str, source_file: str) -> List[ToolDefinition]:
+def _parse_explicit_tools(source: str, source_file: str) -> list[ToolDefinition]:
     """Parse explicit types.Tool() definitions from source code using regex."""
-    tools: List[ToolDefinition] = []
+    tools: list[ToolDefinition] = []
 
     for m in _EXPLICIT_TOOL_RE.finditer(source):
         # Find the opening paren position
@@ -197,7 +196,7 @@ def _parse_explicit_tools(source: str, source_file: str) -> List[ToolDefinition]
 # Public API
 # ---------------------------------------------------------------------------
 
-def parse_file(file_path: str | Path) -> List[ToolDefinition]:
+def parse_file(file_path: str | Path) -> list[ToolDefinition]:
     """Parse a single Python file for MCP tool definitions.
 
     Returns a list of ToolDefinition objects found in the file.
@@ -218,7 +217,7 @@ def parse_file(file_path: str | Path) -> List[ToolDefinition]:
     return tools
 
 
-def _glob_matches(path: str, patterns: List[str]) -> bool:
+def _glob_matches(path: str, patterns: list[str]) -> bool:
     """Check if a path matches any of the given glob patterns."""
     name = os.path.basename(path)
     for pattern in patterns:
@@ -236,8 +235,8 @@ def _glob_matches(path: str, patterns: List[str]) -> bool:
 
 def scan_directory(
     directory: str | Path,
-    exclude: Optional[List[str]] = None,
-) -> List[ToolDefinition]:
+    exclude: list[str] | None = None,
+) -> list[ToolDefinition]:
     """Walk a directory, find .py files, and parse each for tool definitions.
 
     Skips symlinked files and files matching any exclude glob patterns.
@@ -246,7 +245,7 @@ def scan_directory(
         exclude = []
 
     directory = Path(directory)
-    tools: List[ToolDefinition] = []
+    tools: list[ToolDefinition] = []
 
     for root, _dirs, files in os.walk(directory):
         for fname in files:
@@ -268,6 +267,6 @@ def scan_directory(
     return tools
 
 
-def parse_directory(directory: str | Path) -> List[ToolDefinition]:
+def parse_directory(directory: str | Path) -> list[ToolDefinition]:
     """Alias for scan_directory with no exclude patterns."""
     return scan_directory(directory)

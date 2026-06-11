@@ -1,4 +1,5 @@
 LICENSE
+README.md
 pyproject.toml
 src/mcpsafe/__init__.py
 src/mcpsafe/cli.py
@@ -11,6 +12,7 @@ src/mcpsafe.egg-info/dependency_links.txt
 src/mcpsafe.egg-info/entry_points.txt
 src/mcpsafe.egg-info/requires.txt
 src/mcpsafe.egg-info/top_level.txt
+tests/test_action.py
 tests/test_cli.py
 tests/test_formatters.py
 tests/test_parser.py

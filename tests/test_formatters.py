@@ -2,10 +2,7 @@
 
 import json
 
-import pytest
-
 from mcpsafe.formatters import format_json, format_sarif, format_text
-
 
 # ---------------------------------------------------------------------------
 # Helper to build finding dicts (matching rules.scan_tool output shape)

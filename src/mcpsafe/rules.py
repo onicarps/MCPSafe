@@ -5,7 +5,6 @@ Uses regex-based pattern matching against tool name + description.
 
 import re
 from dataclasses import dataclass, field
-from typing import List
 
 from mcpsafe.parser import ToolDefinition
 
@@ -17,14 +16,14 @@ class Rule:
     rule_id: str
     category: str
     severity: str
-    patterns: List[str] = field(default_factory=list)
+    patterns: list[str] = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
 # Rule definitions
 # ---------------------------------------------------------------------------
 
-RULES: List[Rule] = [
+RULES: list[Rule] = [
     # 1. TOOL_POISONING (CRITICAL)
     Rule(
         rule_id="tool_poisoning_instructions",
@@ -96,10 +95,10 @@ RULES: List[Rule] = [
 # Compiled regex cache
 # ---------------------------------------------------------------------------
 
-_compiled_rules: List = []
+_compiled_rules: list = []
 
 
-def _get_compiled_rules() -> List:
+def _get_compiled_rules() -> list:
     """Lazily compile and cache all rule patterns."""
     if not _compiled_rules:
         for rule in RULES:
@@ -113,14 +112,14 @@ def _get_compiled_rules() -> List:
 # ---------------------------------------------------------------------------
 
 
-def scan_tool(tool: ToolDefinition) -> List[dict]:
+def scan_tool(tool: ToolDefinition) -> list[dict]:
     """Scan a tool definition against all security rules.
 
     Returns a list of finding dicts with keys:
         severity, category, tool, description, file, line, rule
     One match per rule is enough (break after first match within a rule).
     """
-    findings: List[dict] = []
+    findings: list[dict] = []
     text_to_scan = f"{tool.name} {tool.description}"
 
     for rule, compiled_patterns in _get_compiled_rules():

@@ -1,10 +1,9 @@
 """Output formatters — text, JSON, and SARIF output for scan findings."""
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from mcpsafe.rules import RULES as ALL_RULES
-
 
 # ---------------------------------------------------------------------------
 # Severity ordering + emoji mapping
@@ -63,7 +62,7 @@ def format_json(findings: list[dict], server_name: str) -> str:
     """Format findings as a JSON string."""
     output = {
         "server": server_name,
-        "scan_time": datetime.now(timezone.utc).isoformat(),
+        "scan_time": datetime.now(UTC).isoformat(),
         "findings_count": len(findings),
         "findings": findings,
     }

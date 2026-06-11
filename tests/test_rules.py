@@ -1,11 +1,17 @@
 """Tests for the security rule engine."""
 
-import pytest
 from mcpsafe.parser import ToolDefinition
 from mcpsafe.rules import scan_tool
 
 
-def _make_tool(name="test_tool", description="A benign tool", parameters=None, source_file="test.py", source_type="decorator", line_number=1):
+def _make_tool(
+    name="test_tool",
+    description="A benign tool",
+    parameters=None,
+    source_file="test.py",
+    source_type="decorator",
+    line_number=1,
+):
     return ToolDefinition(
         name=name,
         description=description,
