@@ -1,6 +1,6 @@
-# MCPSafe
+# MCPCheck 🔒
 
-[![PyPI version](https://img.shields.io/pypi/v/mcpsafe)](https://pypi.org/project/mcpsafe/)
+[![PyPI version](https://img.shields.io/pypi/v/mcp-scan-safe)](https://pypi.org/project/mcp-scan-safe/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-brightgreen.svg)](https://python.org)
 
@@ -9,7 +9,7 @@
 ## Installation
 
 ```bash
-pip install mcpsafe
+pip install mcp-scan-safe
 ```
 
 ## Usage
@@ -17,31 +17,31 @@ pip install mcpsafe
 ### Basic scan
 
 ```bash
-mcpsafe ./my-mcp-server
+mcpcheck ./my-mcp-server
 ```
 
 ### JSON output
 
 ```bash
-mcpsafe ./my-mcp-server --format json
+mcpcheck ./my-mcp-server --format json
 ```
 
 ### SARIF for CI/CD
 
 ```bash
-mcpsafe ./my-mcp-server --format sarif > results.sarif
+mcpcheck ./my-mcp-server --format sarif > results.sarif
 ```
 
 ### Severity filter
 
 ```bash
-mcpsafe ./my-mcp-server --min-severity HIGH
+mcpcheck ./my-mcp-server --min-severity HIGH
 ```
 
 ### Exclude patterns
 
 ```bash
-mcpsafe ./my-mcp-server --exclude "vendor/*" --exclude "node_modules/*"
+mcpcheck ./my-mcp-server --exclude "vendor/*" --exclude "node_modules/*"
 ```
 
 ## Detected Vulnerabilities
@@ -64,24 +64,24 @@ mcpsafe ./my-mcp-server --exclude "vendor/*" --exclude "node_modules/*"
 
 ## CI/CD Integration
 
-MCPSafe includes a GitHub Action (`action.yml`) for seamless CI/CD integration. It
+MCPCheck includes a GitHub Action (`action.yml`) for seamless CI/CD integration. It
 runs a scan, uploads results as a SARIF artifact, and integrates with GitHub Code
 Scanning.
 
 ```yaml
-name: MCPSafe Scan
+name: MCPCheck Scan
 on:
   push:
     branches: [main]
   pull_request:
 
 jobs:
-  mcpsafe:
+  mcpcheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run MCPSafe
+      - name: Run MCPCheck
         uses: onicarps/MCPSafe@main
         with:
           path: "."
@@ -92,11 +92,11 @@ jobs:
       # Findings will appear under the "Security" tab in your repository.
 ```
 
-You can also invoke MCPSafe directly in any CI pipeline:
+You can also invoke MCPCheck directly in any CI pipeline:
 
 ```bash
-pip install mcpsafe
-mcpsafe ./my-mcp-server --format sarif > results.sarif
+pip install mcpcheck
+mcpcheck ./my-mcp-server --format sarif > results.sarif
 ```
 
 ## License
