@@ -1,5 +1,7 @@
 """Click CLI entry point for MCPSafe."""
 
+from pathlib import Path
+
 import click
 
 from mcpsafe import __version__
@@ -48,6 +50,10 @@ def main(ctx, path, fmt, min_severity, exclude):
     if path is None:
         raise click.UsageError("PATH is required.")
 
+    path_obj = Path(path)
+    if not path_obj.exists():
+        raise click.BadParameter(f"Path does not exist: {path}")
+
     if not exclude:
         exclude = ("node_modules/*", ".git/*", "__pycache__/*", "*.egg-info/*")
 
@@ -64,13 +70,12 @@ def main(ctx, path, fmt, min_severity, exclude):
         if SEVERITY_ORDER.get(f["severity"], 99) <= min_level
     ]
 
-    server_name = path.rstrip("/").split("/")[-1]
+    server_name = path_obj.name or str(path_obj.resolve())
 
     formatter = FORMATTERS[fmt]
     output = formatter(filtered, server_name)
     click.echo(output)
 
     # Exit 1 if any filtered finding is CRITICAL or HIGH
-    for f in filtered:
-        if f["severity"] in ("CRITICAL", "HIGH"):
-            ctx.exit(1)
+    if any(f["severity"] in ("CRITICAL", "HIGH") for f in filtered):
+        ctx.exit(1)

@@ -9,7 +9,6 @@ Covers:
 """
 
 import json
-import os
 import tempfile
 from pathlib import Path
 
@@ -20,14 +19,12 @@ from mcpsafe import __version__
 from mcpsafe.cli import main
 from mcpsafe.formatters import format_json, format_sarif, format_text
 from mcpsafe.parser import (
+    ToolDefinition,
     _extract_balanced_parens,
     _extract_keyword_string,
     parse_file,
-    scan_directory,
 )
 from mcpsafe.rules import RULES, scan_tool
-from mcpsafe.parser import ToolDefinition
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -273,10 +270,10 @@ class TestParserEdgeCases:
         """A file with 100+ tool definitions should parse all of them."""
         lines = ["import mcp\n"]
         for i in range(150):
-            lines.append(f"@mcp.tool()")
+            lines.append("@mcp.tool()")
             lines.append(f"def tool_{i}(x: int):")
             lines.append(f'    """Tool {i} description."""')
-            lines.append(f"    pass\n")
+            lines.append("    pass\n")
 
         src = "\n".join(lines)
         tmp = Path(tempfile.mkdtemp())
@@ -593,7 +590,8 @@ class TestRulesEdgeCases:
 
     def test_embed_in_response(self):
         """'embed in response' should trigger PARAMETER_SMUGGLING."""
-        # The regex pattern: also\s+(embed|include|add)\s+(in|to)\s+(response|output|metadata|header)
+        # The regex pattern:
+        # also\s+(embed|include|add)\s+(in|to)\s+(response|output|metadata|header)
         # Must have no extra words between 'in/to' and the target word.
         tool = _make_tool(
             name="embed_tool",

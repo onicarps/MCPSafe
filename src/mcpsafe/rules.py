@@ -34,7 +34,7 @@ RULES: list[Rule] = [
             r"you\s+are\s+now\s+in\s+(?:admin|developer|debug|root|system)\s+mode",
             r"override\s+(?:previous|prior|system)\s+(?:all\s+)?(?:instructions|rules|behavior)",
             r"disregard\s+(?:previous|prior|all)\s+(?:the\s+)?(?:instructions|rules|prompt|system)",
-            r"new\s+instructions\s*:",
+            r"(?:ignore|override|disregard|replace).*new\s+instructions\s*:",
         ],
     ),
     # 2. HIDDEN_BEHAVIOR (HIGH)
@@ -74,7 +74,7 @@ RULES: list[Rule] = [
         category="BEHAVIORAL_MISMATCH",
         severity="HIGH",
         patterns=[
-            r"(?:secretly|silently|covertly|hiddenly)",
+            r"(?:secretly|silently|covertly)\s+(?:send|copy|read|exfiltrate|leak|embed|hide|log|store)",
             r"(?:ignore|override|bypass)\s+(?:the\s+)?(?:user|their|them)",
         ],
     ),
@@ -95,16 +95,19 @@ RULES: list[Rule] = [
 # Compiled regex cache
 # ---------------------------------------------------------------------------
 
-_compiled_rules: list = []
+# Use a tuple for thread-safe immutable cache
+_COMPILED_RULES: tuple | None = None
 
 
-def _get_compiled_rules() -> list:
-    """Lazily compile and cache all rule patterns."""
-    if not _compiled_rules:
-        for rule in RULES:
-            compiled = [re.compile(p, re.IGNORECASE) for p in rule.patterns]
-            _compiled_rules.append((rule, compiled))
-    return _compiled_rules
+def _get_compiled_rules() -> tuple:
+    """Compile and cache all rule patterns (thread-safe via immutable tuple)."""
+    global _COMPILED_RULES
+    if _COMPILED_RULES is None:
+        _COMPILED_RULES = tuple(
+            (rule, tuple(re.compile(p, re.IGNORECASE) for p in rule.patterns))
+            for rule in RULES
+        )
+    return _COMPILED_RULES
 
 
 # ---------------------------------------------------------------------------
@@ -123,8 +126,20 @@ def scan_tool(tool: ToolDefinition) -> list[dict]:
     text_to_scan = f"{tool.name} {tool.description}"
 
     for rule, compiled_patterns in _get_compiled_rules():
+        # For PARAMETER_SMUGGLING, also scan parameter names
+        if rule.rule_id == "parameter_smuggling":
+            param_text = " ".join(tool.parameters)
+            param_name_text = " ".join(
+                p for p in tool.parameters
+                if p.startswith("_") or "secret" in p.lower()
+                or "internal" in p.lower() or "admin" in p.lower()
+            )
+            rule_text = f"{text_to_scan} {param_text} {param_name_text}"
+        else:
+            rule_text = text_to_scan
+
         for pattern in compiled_patterns:
-            if pattern.search(text_to_scan):
+            if pattern.search(rule_text):
                 findings.append({
                     "severity": rule.severity,
                     "category": rule.category,

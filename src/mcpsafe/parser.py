@@ -58,10 +58,24 @@ def _has_tool_decorator(func_node: ast.FunctionDef | ast.AsyncFunctionDef) -> bo
 
 def _extract_parameters(func_node: ast.FunctionDef | ast.AsyncFunctionDef) -> list[str]:
     """Extract argument names from a function definition (skip 'self', 'cls')."""
-    params = []
+    params: list[str] = []
+    # Positional-only args (Python 3.8+)
+    for arg in func_node.args.posonlyargs:
+        if arg.arg not in ("self", "cls"):
+            params.append(arg.arg)
+    # Regular args
     for arg in func_node.args.args:
         if arg.arg not in ("self", "cls"):
             params.append(arg.arg)
+    # *args
+    if func_node.args.vararg:
+        params.append(func_node.args.vararg.arg)
+    # Keyword-only args
+    for arg in func_node.args.kwonlyargs:
+        params.append(arg.arg)
+    # **kwargs
+    if func_node.args.kwarg:
+        params.append(func_node.args.kwarg.arg)
     return params
 
 
@@ -103,7 +117,7 @@ def _parse_decorator_tools(source: str, source_file: str) -> list[ToolDefinition
 # Regex to find types.Tool( or similar explicit Tool() calls
 # We look for patterns like: types.Tool( ... ) or Tool( ... )
 _EXPLICIT_TOOL_RE = re.compile(
-    r"\b(?:types\.Tool|Tool)\s*\(",
+    r"\b(?:types\.Tool|mcp\.types\.Tool)\s*\(",
 )
 
 
@@ -112,6 +126,7 @@ def _extract_balanced_parens(source: str, start: int) -> str | None:
 
     `start` should point to the opening '(' character.
     Returns the content between the parens (exclusive), or None if unbalanced.
+    Handles single, double, and triple-quoted strings.
     """
     if start >= len(source) or source[start] != "(":
         return None
@@ -127,33 +142,46 @@ def _extract_balanced_parens(source: str, start: int) -> str | None:
             if depth == 0:
                 return source[start + 1 : i]
         elif ch in ('"', "'"):
-            # Skip string literals to avoid counting parens inside strings
-            quote = ch
-            i += 1
-            while i < len(source):
-                if source[i] == "\\":
-                    i += 2
-                    continue
-                if source[i] == quote:
-                    break
+            # Check for triple-quoted strings
+            if source[i : i + 3] == '"""' or source[i : i + 3] == "'''":
+                quote = source[i : i + 3]
+                i += 3
+                while i < len(source):
+                    if source[i] == "\\":
+                        i += 2
+                        continue
+                    if source[i : i + 3] == quote:
+                        i += 3
+                        break
+                    i += 1
+            else:
+                # Single/double-quoted string
+                quote = ch
                 i += 1
+                while i < len(source):
+                    if source[i] == "\\":
+                        i += 2
+                        continue
+                    if source[i] == quote:
+                        break
+                    i += 1
         i += 1
     return None
 
 
 def _extract_keyword_string(content: str, key: str) -> str | None:
     """Extract a string value for a keyword argument like name="foo"."""
-    # Match key="value" or key='value'
-    pattern = re.compile(rf'\b{key}\s*=\s*([\'"])(.*?)\1')
-    m = pattern.search(content)
-    if m:
-        return m.group(2)
+    # Match key="value" or key='value', handling backslash-escaped quotes
+    quoted_pattern = re.compile(rf'\b{key}\s*=\s*([\'"])((?:[^\\\'\"]|\\.)*)\1')
+    qm = quoted_pattern.search(content)
+    if qm:
+        return qm.group(2)
     return None
 
 
 def _extract_keyword_list(content: str, key: str) -> list[str] | None:
     """Extract a list value for a keyword argument like parameters=["a", "b"]."""
-    pattern = re.compile(rf'\b{key}\s*=\s*\[(.*?)\]')
+    pattern = re.compile(rf'\b{key}\s*=\s*\[(.*?)\]', re.DOTALL)
     m = pattern.search(content)
     if m:
         inner = m.group(1)
@@ -220,7 +248,7 @@ def parse_file(file_path: str | Path) -> list[ToolDefinition]:
     return tools
 
 
-def _glob_matches(path: str, patterns: list[str]) -> bool:
+def _glob_matches(path: str, patterns: list[str] | tuple[str, ...]) -> bool:
     """Check if a path matches any of the given glob patterns."""
     name = os.path.basename(path)
     for pattern in patterns:
@@ -238,7 +266,7 @@ def _glob_matches(path: str, patterns: list[str]) -> bool:
 
 def scan_directory(
     directory: str | Path,
-    exclude: list[str] | None = None,
+    exclude: list[str] | tuple[str, ...] | None = None,
 ) -> list[ToolDefinition]:
     """Walk a directory, find .py files, and parse each for tool definitions.
 

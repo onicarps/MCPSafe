@@ -79,20 +79,18 @@ _SARIF_SCHEMA = (
 )
 
 
+_SARIF_LEVEL = {
+    "CRITICAL": "error",
+    "HIGH": "warning",
+    "MEDIUM": "warning",
+    "LOW": "note",
+}
+
+
 def _build_sarif_rules() -> list[dict]:
     """Build SARIF rule metadata from ALL_RULES."""
     rules = []
     for rule in ALL_RULES:
-        # Map severity to SARIF level
-        if rule.severity == "CRITICAL":
-            level = "error"
-        elif rule.severity == "HIGH":
-            level = "warning"
-        elif rule.severity == "MEDIUM":
-            level = "warning"
-        else:
-            level = "note"
-
         rules.append({
             "id": rule.rule_id,
             "name": rule.category,
@@ -100,16 +98,14 @@ def _build_sarif_rules() -> list[dict]:
             "fullDescription": {
                 "text": f"Detects {rule.category} patterns: {', '.join(rule.patterns[:2])}..."
             },
-            "defaultConfiguration": {"level": level},
+            "defaultConfiguration": {"level": _SARIF_LEVEL[rule.severity]},
         })
     return rules
 
 
 def _severity_to_sarif_level(severity: str) -> str:
     """Map internal severity to SARIF result level."""
-    if severity == "CRITICAL":
-        return "error"
-    return "warning"
+    return _SARIF_LEVEL.get(severity, "warning")
 
 
 def format_sarif(findings: list[dict], server_name: str) -> str:

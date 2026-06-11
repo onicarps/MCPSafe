@@ -14,6 +14,7 @@ src/mcpsafe.egg-info/requires.txt
 src/mcpsafe.egg-info/top_level.txt
 tests/test_action.py
 tests/test_cli.py
+tests/test_comprehensive.py
 tests/test_formatters.py
 tests/test_parser.py
 tests/test_rules.py
